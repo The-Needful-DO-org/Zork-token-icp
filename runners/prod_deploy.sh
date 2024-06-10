@@ -7,23 +7,23 @@ set -ex
 # --- Configuration Section ---
 
 # Identity configuration. Replace '{production_identity}' with your production identity name. This identity needs to be a controller for your canister
-PRODUCTION_IDENTITY="{production_identity}"
+PRODUCTION_IDENTITY="zork_icrc1_admin"
 dfx identity use $PRODUCTION_IDENTITY
 
 # Canister identitfication - You need to create this canister either via dfx or throught the nns console
-PRODUCTION_CANISTER="{production_canister}"
+PRODUCTION_CANISTER="ckgsm-dqaaa-aaaah-adyca-cai"
 
 #check your cycles. The system needs at least 2x the archiveCycles below to create the archive canister.  We suggest funding the initial canister with 4x the cycles configured in archiveCycles and then using a tool like cycle ops to monitor your cycles. You will need to add the created archive canisters(created after the first maxActiveRecords are created) to cycleops manually for it to be monitored.
 
 
 
 # Token configuration
-TOKEN_NAME="Test Token"
-TOKEN_SYMBOL="TTT"
-TOKEN_LOGO="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InJlZCIvPjwvc3ZnPg=="
+TOKEN_NAME="Zork"
+TOKEN_SYMBOL="ZORK"
+source ./runners/zork_logo_var.sh
 TOKEN_DECIMALS=8
 TOKEN_FEE=10000
-MAX_SUPPLY=null
+MAX_SUPPLY=35200000000000000
 MIN_BURN_AMOUNT=10000
 MAX_MEMO=64
 MAX_ACCOUNTS=100000000
@@ -36,8 +36,10 @@ ADMIN_PRINCIPAL=$(dfx identity get-principal)
 
 dfx build --network ic token --check
 
+# dfx canister --network ic install --mode install --wasm .dfx/ic/canisters/token/token.wasm --argument "(opt record {icrc1 = opt record {
 # Deploy the canister with the specified configuration.
-dfx canister --network ic install --mode install --wasm .dfx/ic/canisters/prodtoken/prodtoken.wasm.gz --argument "(opt record {icrc1 = opt record {
+# dfx canister --network ic install --mode reinstall --wasm .dfx/ic/canisters/prodtoken/prodtoken.wasm.gz --argument "(opt record {icrc1 = opt record {
+dfx deploy token --argument "(opt record {icrc1 = opt record {
   name = opt \"$TOKEN_NAME\";
   symbol = opt \"$TOKEN_SYMBOL\";
   logo = opt \"$TOKEN_LOGO\";
@@ -47,7 +49,7 @@ dfx canister --network ic install --mode install --wasm .dfx/ic/canisters/prodto
     owner = principal \"$ADMIN_PRINCIPAL\";
     subaccount = null;
   };
-  max_supply = $MAX_SUPPLY;
+  max_supply = opt $MAX_SUPPLY;
   min_burn_amount = opt $MIN_BURN_AMOUNT;
   max_memo = opt $MAX_MEMO;
   advanced_settings = null;
@@ -81,10 +83,11 @@ icrc4 = opt record {
   max_balances = opt 200;
   max_transfers = opt 200;
   fee = opt variant { ICRC1 = null};
-};})" --mode reinstall
+};})" --ic
+# --mode reinstall --ic
 
 # Fetch the canister ID after deployment
-ICRC_CANISTER=$(dfx canister id token)
+ICRC_CANISTER=$(dfx canister id token --ic)
 
 # Output the canister ID
 echo $ICRC_CANISTER

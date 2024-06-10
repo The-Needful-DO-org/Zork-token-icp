@@ -1,3 +1,5 @@
+source ./runners/zork_logo_var.sh
+
 set -ex
 
 dfx identity new alice --storage-mode=plaintext || true
@@ -28,16 +30,16 @@ ADMIN_PRINCIPAL=$(dfx identity get-principal)
 
 #Deploy the canister
 dfx deploy token --argument "(opt record {icrc1 = opt record {
-  name = opt \"Test Token\";
-  symbol = opt \"TTT\";
-  logo = opt \"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InJlZCIvPjwvc3ZnPg==\";
+  name = opt \"Zork\";
+  symbol = opt \"ZORK\";
+  logo = opt \"$LOGOURI\";
   decimals = 8;
   fee = opt variant { Fixed = 10000};
   minting_account = opt record{
     owner = principal \"$ADMIN_PRINCIPAL\";
     subaccount = null;
   };
-  max_supply = null;
+  max_supply = opt 352_000_000_0000_0000;
   min_burn_amount = opt 10000;
   max_memo = opt 64;
   advanced_settings = null;
@@ -103,7 +105,7 @@ dfx canister call token icrc1_metadata  --query
 dfx canister call token icrc1_transfer "(record { 
   memo = null; 
   created_at_time=null;
-  from_subaccoint = null;
+  from_subaccount = null;
   amount = 100000000000;
   to = record { 
     owner = principal \"$ALICE_PRINCIPAL\";
@@ -134,7 +136,7 @@ dfx canister call token icrc1_transfer "(record {
   memo = null; 
   created_at_time=null;
   amount = 50000000000;
-  from_subaccoint = null;
+  from_subaccount = null;
   to = record { 
     owner = principal \"$BOB_PRINCIPAL\";
     subaccount = null;
@@ -192,7 +194,7 @@ dfx canister call token icrc2_transfer_from "(record {
   memo = null; 
   created_at_time=null;
   amount = 12500000000;
-  spender_subaccoint = null;
+  spender_subaccount = null;
   to = record { 
     owner = principal \"$CHARLIE_PRINCIPAL\";
     subaccount = null;
@@ -244,7 +246,7 @@ dfx canister call token icrc2_approve "(record {
   memo = null; 
   created_at_time=null;
   amount = 0;
-  from_subaccoint = null;
+  from_subaccount = null;
   expected_allowance = null;
   expires_at = null;
   spender = record { 
